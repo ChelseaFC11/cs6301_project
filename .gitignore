@@ -1,0 +1,4 @@
+*
+!.gitignore
+!isdigit_i386.v
+!isdigit_proofs.v
