@@ -159,8 +159,11 @@ Qed.
 Definition streq (m:addr->N) (p1 p2:addr) (k:N) :=
   ∀ i, i < k -> m (p1⊕i) = m (p2⊕i) /\ 0 < m (p1⊕i).
 
+Definition isdigit (m:addr->N) (p:addr) :=
+  m p >= 48 /\ m p <= 57.  
+
 (* The invariant-set for this property makes no assumptions at program-start
-   (address 0), and puts a loop-invariant at address 8. *)
+   (address 0). *)
 Definition isdigit_invs (m:addr->N) (esp:N) (a:addr) (s:store) :=
   match a with
   |  32051 => Some True
@@ -178,10 +181,8 @@ Definition isdigit_post' (m:addr->N) (esp:N) (_:exit) (s:store) :=
          (m (m Ⓓ[esp⊕4] ⊕ k) ?= m (m Ⓓ[esp⊕8] ⊕ k)) = (toZ 32 n ?= Z0)%Z.
 
 Definition isdigit_post (m:addr->N) (esp:N) (_:exit) (s:store) :=
-  ∃ n k, s R_EAX = Ⓓn /\
-  streq m (m Ⓓ[esp⊕4]) (m Ⓓ[esp⊕8]) k /\
-  (n=0 -> m (m Ⓓ[esp⊕4] ⊕ k) = 0) /\
-  (m (m Ⓓ[esp⊕4] ⊕ k) ?= m (m Ⓓ[esp⊕8] ⊕ k)) = (toZ 32 n ?= Z0)%Z.
+  ∃ n, s R_EAX = Ⓓn /\
+    isdigit m (esp⊕4) = (n<>0).
 
 
 (* The invariant-set and post-conditions are combined as usual: *)
